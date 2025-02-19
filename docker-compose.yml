@@ -1,0 +1,47 @@
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: test_db
+    volumes:
+      - mongo_data:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    networks:
+      - mongo_network
+
+  backend:
+    build: .
+    container_name: backend
+    ports:
+      - '3100:3100'
+    environment:
+      MONGO_HOST: mongodb
+      MONGO_USERNAME: admin
+      MONGO_PASSWORD: password
+      MONGO_DB: test_db
+    depends_on:
+      - mongodb
+    networks:
+      - mongo_network
+
+  frontend:
+    build:
+      context: ./app
+    container_name: frontend
+    ports:
+      - '3000:3000'
+    networks:
+      - mongo_network
+
+volumes:
+  mongo_data:
+    driver: local
+
+networks:
+  mongo_network:
+    driver: bridge
