@@ -15,8 +15,8 @@ services:
       - mongo_network
 
   backend:
-    build: .
-    container_name: backend
+    build: ./api
+    container_name: api
     ports:
       - '3100:3100'
     environment:
@@ -30,9 +30,8 @@ services:
       - mongo_network
 
   frontend:
-    build:
-      context: ./app
-    container_name: frontend
+    build: ./client
+    container_name: client
     ports:
       - '3000:3000'
     networks:
