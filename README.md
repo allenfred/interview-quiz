@@ -94,9 +94,16 @@ Frontend: Open http://localhost:3000 in your browser.
 Backend: The backend API will be available at http://localhost:3100.
 MongoDB: MongoDB will be running on port 27017.
 
+## User data from mongodb for Testing
+
+| Name          | Email                     | Phone       | Role     | Password |
+| ------------- | ------------------------- | ----------- | -------- | -------- |
+| Alice Johnson | alice.johnson@example.com | 12345678910 | guest    | 123456   |
+| Bob Brown     | bob.brown@example.com     | 09876543210 | employee | 123456   |
+| Charlie Davis | charlie.davis@example.com | 11223344550 | guest    | 123456   |
+
 ## What's Next (Undo)
 
-- Add logging properly
-- build GraphQL endpoints
+- Code Review & Bug fix
 - Clean code
 - Unit Tests

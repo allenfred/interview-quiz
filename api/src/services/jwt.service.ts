@@ -42,6 +42,7 @@ export class JWTService implements TokenService {
           id: decodedToken.id,
           name: decodedToken.name,
           email: decodedToken.email,
+          phone: decodedToken.phone,
           role: decodedToken.role,
         },
       );
@@ -61,15 +62,15 @@ export class JWTService implements TokenService {
     }
     const userInfoForToken = {
       id: userProfile[securityId],
-      name: userProfile.name,
-      email: userProfile.email,
-      role: userProfile.role,
+      ...userProfile,
     };
+
     // Generate a JSON Web Token
     let token: string;
     try {
       token = await signAsync(userInfoForToken, this.jwtSecret, {
         expiresIn: Number(this.jwtExpiresIn),
+        // algorithm: 'HS256',
       });
     } catch (error) {
       throw new HttpErrors.Unauthorized(`Error encoding token : ${error}`);

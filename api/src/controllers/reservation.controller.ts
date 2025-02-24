@@ -41,15 +41,17 @@ export class ReservationController {
         'application/json': {
           schema: getModelSchemaRef(Reservation, {
             title: 'NewReservation',
+            exclude: ['id', 'userId'],
           }),
         },
       },
     })
-    reservation: Omit<Reservation, 'id'>,
+    reservation: Omit<Reservation, 'id' | 'userId'>,
   ): Promise<Reservation> {
     return this.reservationRepository.create({
       ...reservation,
       contactInfo: user.name,
+      userId: user.id,
     });
   }
 
@@ -72,6 +74,7 @@ export class ReservationController {
     if (user.role === 'guest') {
       filter = {where: {userId: user.id}};
     }
+
     return this.reservationRepository.find(filter);
   }
 

@@ -7,21 +7,25 @@ import {WinstonLogger, LoggingBindings} from '@loopback/logging';
 import {
   TokenServiceBindings,
   UserServiceBindings,
-  MyUserService,
 } from '@loopback/authentication-jwt';
 import {repository} from '@loopback/repository';
 import {SchemaObject} from '@loopback/openapi-v3';
+import {MyUserService} from '../services';
 import {ReservationRepository} from '../repositories/reservation.repository';
 import {MyUserRepository} from '../repositories/user.repository';
-import {UserWithPassword} from '../models';
+import {User, UserWithPassword} from '../models';
+import {MyCredentials} from '../types';
 
 const CredentialsSchema: SchemaObject = {
   type: 'object',
-  required: ['email', 'password', 'role'],
+  required: ['contactInfo', 'password', 'role'],
   properties: {
-    email: {
+    contactInfo: {
       type: 'string',
-      format: 'email',
+      oneOf: [
+        {format: 'email'},
+        {pattern: '^[0-9]{11}$'}, // Assuming phone number is 11 digits
+      ],
     },
     password: {
       type: 'string',
@@ -75,12 +79,6 @@ export const SignupRequestBody = {
   },
 };
 
-export interface Credentials {
-  email: string;
-  password: string;
-  role: 'employee' | 'guest';
-}
-
 @api({basePath: '/api'})
 export class UserController {
   @inject(LoggingBindings.WINSTON_LOGGER)
@@ -120,7 +118,7 @@ export class UserController {
     cors: true,
   })
   async login(
-    @requestBody(CredentialsRequestBody) credentials: Credentials,
+    @requestBody(CredentialsRequestBody) credentials: MyCredentials,
   ): Promise<{token: string}> {
     const user = await this.userService.verifyCredentials(credentials);
     const userProfile = this.userService.convertToUserProfile(user);
@@ -154,7 +152,7 @@ export class UserController {
   async signup(
     @requestBody(SignupRequestBody)
     newUserRequest: Omit<UserWithPassword, 'id'>,
-  ): Promise<UserWithPassword> {
+  ): Promise<User> {
     return this.userService.createUser(newUserRequest);
   }
 

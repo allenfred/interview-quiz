@@ -1,7 +1,4 @@
-import {
-  AuthenticationComponent,
-  registerAuthenticationStrategy,
-} from '@loopback/authentication';
+import {AuthenticationComponent} from '@loopback/authentication';
 import {
   JWTAuthenticationComponent,
   UserServiceBindings,
@@ -15,6 +12,7 @@ import {
 } from '@loopback/logging';
 import {BootMixin} from '@loopback/boot';
 import {ApplicationConfig, extensionFor} from '@loopback/core';
+import {GraphQLBindings, GraphQLComponent} from '@loopback/graphql';
 import {RepositoryMixin} from '@loopback/repository';
 import {RestApplication} from '@loopback/rest';
 import {
@@ -28,8 +26,9 @@ import {MySequence} from './sequence';
 import {format} from 'winston';
 import {MyUserRepository, MyUserCredentialsRepository} from './repositories';
 import {MyUserService, JWTService, BcryptHasher} from './services';
-// import {JWTAuthenticationStrategy} from './strategies/jwt-strategy';
 import {PasswordHasherBindings} from './keys';
+import {ResolveAuthMiddleware} from './middlewares';
+import {ReservationResolver} from './graphql-resolvers/reservation-resolver';
 
 export {ApplicationConfig};
 
@@ -39,10 +38,29 @@ export class InterviewQuizApplication extends BootMixin(
   constructor(options: ApplicationConfig = {}) {
     super(options);
 
+    // config graphql
+    this.component(GraphQLComponent);
+    this.configure(GraphQLBindings.GRAPHQL_SERVER).to({
+      asMiddlewareOnly: true,
+    });
+
+    const server = this.getSync(GraphQLBindings.GRAPHQL_SERVER);
+    // To register one or more middlewares as per https://typegraphql.com/docs/middlewares.html
+    server.middleware(ResolveAuthMiddleware);
+    server.resolver(ReservationResolver);
+
+    this.expressMiddleware('middleware.express.GraphQL', server.expressApp);
+
+    // It's possible to register a graphql context resolver
+    // this.bind(GraphQLBindings.GRAPHQL_CONTEXT_RESOLVER).to(context => {
+    //   return {...context};
+    // });
+
+    // configure logging
     this.configure(LoggingBindings.COMPONENT).to({
-      enableFluent: false, // default to true
-      enableHttpAccessLog: true, // default to true
-      level: 'info', // Set the log level
+      enableFluent: false,
+      enableHttpAccessLog: true,
+      level: 'info',
     });
 
     const consoleTransport = new WinstonTransports.Console({
@@ -52,8 +70,6 @@ export class InterviewQuizApplication extends BootMixin(
     this.bind('logging.winston.transports.console')
       .to(consoleTransport)
       .apply(extensionFor(WINSTON_TRANSPORT));
-
-    // registerAuthenticationStrategy(this, JWTAuthenticationStrategy);
 
     // Set up the custom sequence
     this.sequence(MySequence);
@@ -69,36 +85,26 @@ export class InterviewQuizApplication extends BootMixin(
 
     this.component(LoggingComponent);
 
-    // ------ ADD SNIPPET AT THE TOP ---------
     // Bind bcrypt hash services
     this.bind(PasswordHasherBindings.ROUNDS).to(10);
     this.bind(PasswordHasherBindings.PASSWORD_HASHER).toClass(BcryptHasher);
-    // ----------- END OF SNIPPET ------------
 
-    // ------ ADD SNIPPET AT THE BOTTOM ---------
     // Mount authentication system
     this.component(AuthenticationComponent);
-    // Mount jwt component
     this.component(JWTAuthenticationComponent);
-    // Bind datasource
     this.dataSource(MongodbDataSource, UserServiceBindings.DATASOURCE_NAME);
-    // Bind user service
     this.bind(UserServiceBindings.USER_SERVICE).toClass(MyUserService);
-    // Bind jwt service
     this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
-    // Bind user and credentials repository
     this.bind(UserServiceBindings.USER_REPOSITORY).toClass(MyUserRepository);
     this.bind(UserServiceBindings.USER_CREDENTIALS_REPOSITORY).toClass(
       MyUserCredentialsRepository,
     );
-    // ------------- END OF SNIPPET -------------
+    this.bind(TokenServiceBindings.TOKEN_SECRET).to('test');
 
     this.projectRoot = __dirname;
-    // Customize @loopback/boot Booter Conventions here
     this.bootOptions = {
       controllers: {
-        // Customize ControllerBooter Conventions here
-        dirs: ['controllers'],
+        dirs: ['controllers', 'graphql-resolvers'],
         extensions: ['.controller.js'],
         nested: true,
       },

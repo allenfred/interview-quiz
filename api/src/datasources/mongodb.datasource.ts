@@ -4,7 +4,7 @@ import {juggler} from '@loopback/repository';
 const config = {
   name: 'mongodb',
   connector: 'mongodb',
-  url: `mongodb://admin:password@${process.env.MONGO_HOST || 'localhost'}:27017/`,
+  url: `mongodb://admin:password@${process.env.MONGO_HOST ?? 'localhost'}:27017/`,
   database: 'test_db',
   useNewUrlParser: true,
   strictObjectIDCoercion: true,

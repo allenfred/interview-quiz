@@ -1,9 +1,10 @@
-import {Box, Button, Container, TextField, Typography} from '@mui/material';
-import {useState} from 'react';
-import {useDispatch} from 'react-redux';
-import {useNavigate} from 'react-router-dom';
-import {AppDispatch} from '../store';
-import {signup} from '../store/slices/authSlice';
+import { Box, Button, Container, TextField, Typography } from '@mui/material';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { AppDispatch } from '../store';
+import { signup } from '../store/slices/authSlice';
+import { validateEmail, validatePhone, validatePassword } from '../util';
 
 function Signup() {
   const dispatch = useDispatch<AppDispatch>();
@@ -12,25 +13,11 @@ function Signup() {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState({email: '', phone: '', password: ''});
-
-  const validateEmail = (email: string) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-  };
-
-  const validatePhone = (phone: string) => {
-    const re = /^\d{11}$/;
-    return re.test(phone);
-  };
-
-  const validatePassword = (password: string) => {
-    return password.length >= 6;
-  };
+  const [errors, setErrors] = useState({ email: '', phone: '', password: '' });
 
   const handleSignup = async () => {
     let valid = true;
-    const newErrors = {email: '', phone: '', password: ''};
+    const newErrors = { email: '', phone: '', password: '' };
 
     if (!validateEmail(email)) {
       newErrors.email = 'Invalid email address';
@@ -48,11 +35,9 @@ function Signup() {
     setErrors(newErrors);
 
     if (valid) {
-      const result = await dispatch(
-        signup({name, email, phone, password, role: 'guest'}),
-      );
+      const result = await dispatch(signup({ name, email, phone, password, role: 'guest' }));
       if (signup.fulfilled.match(result)) {
-        navigate('/reserve');
+        navigate('/entrance');
       }
     }
   };
@@ -64,42 +49,14 @@ function Signup() {
           Signup
         </Typography>
         <form
-          onSubmit={e => {
+          onSubmit={(e) => {
             e.preventDefault();
             handleSignup();
           }}
         >
-          <TextField
-            label="Name"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={name}
-            onChange={e => setName(e.target.value)}
-            required
-          />
-          <TextField
-            label="Email"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            error={!!errors.email}
-            helperText={errors.email}
-            required
-          />
-          <TextField
-            label="Phone"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={phone}
-            onChange={e => setPhone(e.target.value)}
-            error={!!errors.phone}
-            helperText={errors.phone}
-            required
-          />
+          <TextField label="Name" variant="outlined" fullWidth margin="normal" value={name} onChange={(e) => setName(e.target.value)} required />
+          <TextField label="Email" variant="outlined" fullWidth margin="normal" value={email} onChange={(e) => setEmail(e.target.value)} error={!!errors.email} helperText={errors.email} required />
+          <TextField label="Phone" variant="outlined" fullWidth margin="normal" value={phone} onChange={(e) => setPhone(e.target.value)} error={!!errors.phone} helperText={errors.phone} required />
           <TextField
             label="Password"
             type="password"
@@ -107,7 +64,7 @@ function Signup() {
             fullWidth
             margin="normal"
             value={password}
-            onChange={e => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
             error={!!errors.password}
             helperText={errors.password}
             required

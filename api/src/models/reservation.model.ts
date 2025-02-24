@@ -1,6 +1,8 @@
 import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {field, ID, objectType} from '@loopback/graphql';
 import {User} from './user.model';
 
+@objectType()
 @model({
   settings: {
     strictObjectIDCoercion: true,
@@ -8,6 +10,7 @@ import {User} from './user.model';
   },
 })
 export class Reservation extends Entity {
+  @field(type => ID)
   @property({
     type: 'string',
     id: true,
@@ -15,24 +18,28 @@ export class Reservation extends Entity {
   })
   id: string;
 
+  @field()
   @property({
     type: 'string',
     required: true,
   })
   guestName: string;
 
+  @field()
   @property({
     type: 'string',
     required: true,
   })
   contactInfo: string;
 
+  @field()
   @property({
     type: 'date',
     required: true,
   })
-  expectedArrivalTime: string;
+  expectedArrivalTime: Date;
 
+  @field()
   @property({
     type: 'number',
     required: true,
@@ -42,17 +49,22 @@ export class Reservation extends Entity {
   })
   tableSize: number;
 
+  @field()
   @property({
     type: 'string',
     required: true,
     jsonSchema: {
-      enum: ['confirmed', 'canceled', 'completed'],
+      enum: ['confirmed', 'cancelled', 'completed'],
     },
     default: 'confirmed',
   })
   status: string;
 
-  @belongsTo(() => User)
+  @property({
+    type: 'string',
+    required: true,
+    mongodb: {dataType: 'ObjectId'},
+  })
   userId: string;
 
   constructor(data?: Partial<Reservation>) {

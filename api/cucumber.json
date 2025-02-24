@@ -1,0 +1,13 @@
+{
+  "default": {
+    "requireModule": ["ts-node/register"],
+    "require": [
+      "src/__tests__/features/**/*.ts",
+      "!src/__tests__/features/**/*.d.ts"
+    ],
+    "paths": ["src/__tests__/features/**/*.feature"],
+    "formatOptions": {
+      "snippetInterface": "synchronous"
+    }
+  }
+}
