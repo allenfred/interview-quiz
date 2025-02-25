@@ -44,40 +44,35 @@ function Entrance() {
         <Typography variant="h4" gutterBottom>
           Welcome to Hilton Restaurant
         </Typography>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleLogin(Role.Guest);
-          }}
-        >
-          <TextField
-            label="Contact Info (Phone/Email)"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={contactInfo}
-            onChange={(e) => setContactInfo(e.target.value)}
-            error={!!errors.contactInfo}
-            helperText={errors.contactInfo}
-          />
-          <TextField
-            label="Password"
-            type="password"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            error={!!errors.password}
-            helperText={errors.password}
-          />
-          {status === 'failed' && <Typography color="error">{error}</Typography>}
-          <Box mt={2}>
-            <Button type="submit" variant="contained" color="primary" fullWidth>
-              Guest Entrance
-            </Button>
-          </Box>
-        </form>
+        <TextField
+          name="contactInfo"
+          label="Contact Info (Phone/Email)"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={contactInfo}
+          onChange={(e) => setContactInfo(e.target.value)}
+          error={!!errors.contactInfo}
+          helperText={errors.contactInfo}
+        />
+        <TextField
+          name="password"
+          label="Password"
+          type="password"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          error={!!errors.password}
+          helperText={errors.password}
+        />
+        {status === 'failed' && <Typography color="error">{error}</Typography>}
+        <Box mt={2}>
+          <Button variant="contained" color="primary" onClick={() => handleLogin(Role.Guest)} fullWidth>
+            Guest Entrance
+          </Button>
+        </Box>
         <Box mt={2}>
           <Button variant="contained" color="secondary" onClick={() => handleLogin(Role.Employee)} fullWidth>
             Employee Entrance

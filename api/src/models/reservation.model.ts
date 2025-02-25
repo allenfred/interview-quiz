@@ -1,6 +1,5 @@
-import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {Entity, model, property} from '@loopback/repository';
 import {field, ID, objectType} from '@loopback/graphql';
-import {User} from './user.model';
 
 @objectType()
 @model({

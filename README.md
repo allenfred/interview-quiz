@@ -12,7 +12,7 @@ Whenever dependencies in `package.json` are changed, run the following command:
 yarn install
 ```
 
-## Run the frontend application
+## Reactjs Application (MUI)
 
 ```sh
 cd app
@@ -20,9 +20,10 @@ yarn install
 yarn start
 ```
 
-## Run the backedn application
+## Loopback4 Application (Restful API/Graphql)
 
 ```sh
+cd api
 yarn install
 yarn start
 ```
@@ -66,8 +67,10 @@ yarn run lint:fix
 
 ## Tests
 
+### Cypress e2e test for Client
+
 ```sh
-yarn test
+npx cypress open
 ```
 
 ## Docker Setup
@@ -90,9 +93,10 @@ This command will build and start the following services:
 
 ### Accessing the Services
 
-Frontend: Open http://localhost:3000 in your browser.
-Backend: The backend API will be available at http://localhost:3100.
-MongoDB: MongoDB will be running on port 27017.
+- React Client: Open http://localhost:3000 in your browser.
+- RestAPI: The backend Rest API will be available at http://localhost:3100.
+- Graphql: The backend Graphql API will be available at http://localhost:3100/graphql.
+- MongoDB: MongoDB will be running on port 27017.
 
 ## User data from mongodb for Testing
 
@@ -104,6 +108,6 @@ MongoDB: MongoDB will be running on port 27017.
 
 ## What's Next (Undo)
 
-- Code Review & Bug fix
+- Code Review & Bug fixes
 - Clean code
-- Unit Tests
+- More Unit Tests
